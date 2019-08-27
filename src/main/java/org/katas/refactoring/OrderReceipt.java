@@ -7,47 +7,52 @@ package org.katas.refactoring;
  * total sales tax) and prints it.
  */
 public class OrderReceipt {
+    private double totSalesTax;
+    private double totalAmount;
     private Order order;
+    private StringBuilder output = new StringBuilder();
 
-    public OrderReceipt(Order order) {
+    public OrderReceipt(double totSalesTax, double totalAmount, Order order) {
+        this.totSalesTax = totSalesTax;
+        this.totalAmount = totalAmount;
         this.order = order;
     }
 
     public String printReceipt() {
-        StringBuilder output = new StringBuilder();
 
-        output.append("======Printing Orders======\n");
-        output.append(order.getCustomerName());
-        output.append(order.getCustomerAddress());
-        output.append(outputAllLineItem(output,order));
+        outputOrders();
+        outputCustomerName();
+        outputCustomerAddress();
+        outputAllLineItem();
+        outSalesTax();
+        outTotalAmount();
 
         return output.toString();
     }
 
-    private StringBuilder outputAllLineItem(StringBuilder output, Order order){
+    private void outputOrders(){
+        output.append("======Printing Orders======\n");
+    }
+
+    private void outputCustomerName(){
+        output.append(order.getCustomerName());
+    }
+
+    private void outputCustomerAddress(){
+        output.append(order.getCustomerAddress());
+    }
+
+    private void outputAllLineItem(){
         // prints lineItems
-        double totSalesTx = 0d;
-        double tot = 0d;
         for (LineItem lineItem : order.getLineItems()) {
-            output.append(outputOneLineItem(output,lineItem));
-            totSalesTx += calculateSalesTax(lineItem.getTotalAmount());
-            tot += lineItem.getTotalAmount() + calculateSalesTax(lineItem.getTotalAmount());
+            outputOneLineItem(lineItem);
+            totSalesTax += calculateSalesTax(lineItem.getTotalAmount());
+            totalAmount += lineItem.getTotalAmount() + calculateSalesTax(lineItem.getTotalAmount());
         }
 
-        output.append(outSalesTax(output,totSalesTx));
-        output.append(outSalesTax(output,tot));
-        return output;
     }
 
-    private StringBuilder outSalesTax(StringBuilder output, double totSalesTx){
-        return output.append("Sales Tax").append('\t').append(totSalesTx);
-    }
-
-    private StringBuilder outTotalAmount(StringBuilder output, double tot){
-        return output.append("Total Amount").append('\t').append(tot);
-    }
-
-    private StringBuilder outputOneLineItem(StringBuilder output, LineItem lineItem){
+    private void outputOneLineItem(LineItem lineItem){
         output.append(lineItem.getDescription());
         output.append('\t');
         output.append(lineItem.getPrice());
@@ -56,7 +61,14 @@ public class OrderReceipt {
         output.append('\t');
         output.append(lineItem.getTotalAmount());
         output.append('\n');
-        return output;
+    }
+
+    private void outSalesTax(){
+        output.append("Sales Tax").append('\t').append(totSalesTax);
+    }
+
+    private void outTotalAmount(){
+        output.append("Total Amount").append('\t').append(totalAmount);
     }
 
     private double calculateSalesTax(double itemPrice){
